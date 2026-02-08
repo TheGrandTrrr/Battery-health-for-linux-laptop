@@ -2,7 +2,6 @@
 
 BATTERY="/sys/class/power_supply/BAT0"
 
-# Проверяем, какие файлы есть: energy_* или charge_*
 if [[ -f "$BATTERY/energy_full" && -f "$BATTERY/energy_full_design" ]]; then
     FULL=$(cat "$BATTERY/energy_full")
     DESIGN=$(cat "$BATTERY/energy_full_design")
@@ -10,11 +9,10 @@ elif [[ -f "$BATTERY/charge_full" && -f "$BATTERY/charge_full_design" ]]; then
     FULL=$(cat "$BATTERY/charge_full")
     DESIGN=$(cat "$BATTERY/charge_full_design")
 else
-    echo "Не удалось определить параметры батареи"
+    echo "Couldn`t ger battery paramets."
     exit 1
 fi
 
-# Считаем здоровье
 HEALTH=$(awk "BEGIN { printf \"%.1f\", ($FULL / $DESIGN) * 100 }")
 
 echo "Battery health: $HEALTH%"
