@@ -3,16 +3,23 @@
 BATTERY="/sys/class/power_supply/BAT0"
 
 if [[ -f "$BATTERY/energy_full" && -f "$BATTERY/energy_full_design" ]]; then
-    FULL=$(cat "$BATTERY/energy_full")
-    DESIGN=$(cat "$BATTERY/energy_full_design")
+  FULL=$(cat "$BATTERY/energy_full")
+  DESIGN=$(cat "$BATTERY/energy_full_design")
 elif [[ -f "$BATTERY/charge_full" && -f "$BATTERY/charge_full_design" ]]; then
-    FULL=$(cat "$BATTERY/charge_full")
-    DESIGN=$(cat "$BATTERY/charge_full_design")
+  FULL=$(cat "$BATTERY/charge_full")
+  DESIGN=$(cat "$BATTERY/charge_full_design")
 else
-    echo "Couldn`t ger battery paramets."
-    exit 1
+  echo "Couldnt get information about battery, pls tell developer about this accident."
+  exit 1
 fi
+
+dw=$(echo "scale=2; $DESIGN / 1000000" | bc)
+crw=$(echo "scale=2; $FULL / 1000000" | bc)
+
 
 HEALTH=$(awk "BEGIN { printf \"%.1f\", ($FULL / $DESIGN) * 100 }")
 
 echo "Battery health: $HEALTH%"
+echo "Designed full opacity: $dw"
+echo "Current full opacity: $crw"
+
