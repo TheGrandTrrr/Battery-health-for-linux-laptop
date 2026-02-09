@@ -1,0 +1,32 @@
+#!/bin/bash
+
+BATTERY="/sys/class/power_supply/BAT0"
+
+if [[ -f "$BATTERY/energy_full" && -f "$BATTERY/energy_full_design" ]]; then
+  FULL=$(cat "$BATTERY/energy_full")
+  DESIGN=$(cat "$BATTERY/energy_full_design")
+elif [[ -f "$BATTERY/charge_full" && -f "$BATTERY/charge_full_design" ]]; then
+  FULL=$(cat "$BATTERY/charge_full")
+  DESIGN=$(cat "$BATTERY/charge_full_design")
+else
+  echo -e "\e[41mCouldnt get information about battery, pls tell developer about this accident.\e[0m"
+  exit 1
+fi
+
+HEALTH=$(awk "BEGIN { printf \"%.1f\", ($FULL / $DESIGN) * 100 }")
+
+dw=$(echo "scale=2; $DESIGN / 1000000" | bc)
+crw=$(echo "scale=2; $FULL / 1000000" | bc)
+echo ""
+echo ""
+echo -e "████████████████████████           \e[1;4;45;30mBattery Care Agency <3\e[0m"
+echo -e "██                    ██         "
+echo -e "██  \e[32m████  ████  ████\e[0m  ██\e[93m██\e[0m ]-----[\e[34m Battery health:\e[0m $HEALTH%"
+echo -e "██  \e[32m████  ████  ████\e[0m  ██\e[93m██\e[0m ]-----[\e[31m Designed full opacity:\e[0m $dw Wh"
+echo -e "██  \e[32m████  ████  ████\e[0m  ██\e[93m██\e[0m ]-----[\e[32m Current full opacity:\e[0m $crw Wh"
+echo "██                    ██  "
+echo "████████████████████████  "
+echo ""
+
+
+
